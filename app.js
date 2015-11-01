@@ -12,8 +12,8 @@ $(document).ready( function() {
 		// zero out results if previous search has run
 		$('.results').html('');
 		// get the value of the tags the user submitted
-		var answerers = $(this).find("input[name='answerers']").val();
-		getInspiration(answerers);
+		var tag = $(this).find("input[name='answerers']").val();
+		getInspiration(tag);
 		
 	});
 
@@ -111,8 +111,6 @@ var getUnanswered = function(tags) {
 
 
 
-
-
 //====SHOWING TOP ANSWERERS FOR GET INSPIRED FEATURE=====//
 
 // this function takes the top answerer returned by StackOverflow 
@@ -122,6 +120,9 @@ var showAnswerer = function(answerers) {
 	
 	// clone our result template code
 	var result = $('.templates .user').clone();
+
+
+	//Reference: https://api.stackexchange.com/docs/top-answerers-on-tags
 
 	// Set display name to show and link in result
 	var displayName= result.find('.name a');
@@ -139,7 +140,7 @@ var showAnswerer = function(answerers) {
 	// Set Post Count to show in result
 	var postCount= result.find('.post-count').text(answerers.post_count);
 
-	// Set Reputation to show in result
+	// Set Score to show in result
 	var userScore= result.find('.score').text(answerers.score);
 
 	return result;
@@ -152,13 +153,15 @@ var showAnswerer = function(answerers) {
 var getInspiration = function(tag) {
 	
 	// parameters needed to pass in request to StackOverflow's API
+	//Reference: https://api.stackexchange.com/docs/top-answerers-on-tags
+
 	var request = {tag: tag,
-				   period: 'month',
+				   period: 'month', //could also choose all_time
+				   filter: 'default',
 				   site: 'stackoverflow'
 				};
 	
-	
-	//Helpful reference for below: https://api.stackexchange.com/docs/top-answerers-on-tags							
+								
 
 	var result = $.ajax({
 		url: "http://api.stackexchange.com/2.2/tags/" + request.tag + "/top-answerers/"+ request.period,
@@ -172,7 +175,7 @@ var getInspiration = function(tag) {
 	.done(function(result){
 
 		//shows the number of results available and displays in .search-results div
-		 var searchResults = showSearchResults(request.tag, result.items.length);
+		 var searchResults = showSearchResults(request.tag, result.items.length); //how many items are returned
 
 		$('.search-results').html(searchResults);
 
